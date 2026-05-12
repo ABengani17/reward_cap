@@ -1,6 +1,6 @@
 # rewardcap
 
-When you combine multiple reward signals in LLM RL post-training using a weighted sum, whichever scorer has the steepest gradient ends up steering the policy, regardless of weight. Format compliance crowds out correctness ([Med-RLVR](https://arxiv.org/abs/2502.19655)). An LLM judge that can read the chain of thought ends up rewarding whatever CoT pattern correlates with high scores, even when that pattern has nothing to do with the task ([Baker et al. 2025](https://arxiv.org/abs/2503.11926)).
+When we combine multiple reward signals in LLM RL post-training using a weighted sum, whichever scorer has the steepest gradient ends up steering the policy, regardless of weight. Format compliance crowds out correctness ([Med-RLVR](https://arxiv.org/abs/2502.19655)). An LLM judge that can read the chain of thought ends up rewarding whatever CoT pattern correlates with high scores, even when that pattern has nothing to do with the task ([Baker et al. 2025](https://arxiv.org/abs/2503.11926)).
 
 `rewardcap` is a small Python library that replaces the weighted sum with a gated sum of capped scorers, plus a separate per-sample budget for any scorer that reads the chain of thought.
 
