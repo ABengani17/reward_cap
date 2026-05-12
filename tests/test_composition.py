@@ -3,11 +3,14 @@ Tests for composition, scenarios, and audit.
 Run: pytest tests/ -v
 """
 
-import numpy as np
 import pytest
+
 from src.composition import (
-    RewardComponent, ComponentType,
-    GatedCompositor, WeightedSumCompositor, CompositionMonitor,
+    ComponentType,
+    CompositionMonitor,
+    GatedCompositor,
+    RewardComponent,
+    WeightedSumCompositor,
     run_bandit,
 )
 from src.scenarios import priority_inversion_broken, priority_inversion_fixed

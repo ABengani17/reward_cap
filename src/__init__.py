@@ -1,9 +1,43 @@
-"""
-rewardcap - structured reward composition for RL training.
+"""rewardcap - constraint-projection layer for monitorability-preserving
+reward composition in LLM post-training.
 
-Replaces ad-hoc weighted sums with a composition layer that separates
-gate constraints from scoring signals and monitors component health
-during training.
+See README.md for the framing and docs/theory.md for the formal version.
 """
 
-__version__ = "0.1.0"
+from src.composition import (
+    # legacy
+    ComponentType,
+    CompositionMonitor,
+    CompositionSpec,
+    Compositor,
+    DifferentialCap,
+    Gate,
+    GatedCompositor,
+    Monitor,
+    RewardComponent,
+    RewardResult,
+    Scorer,
+    WeightedSumCompositor,
+    run_bandit,
+    spec_from_components,
+)
+
+__version__ = "0.2.0"
+
+__all__ = [
+    "__version__",
+    "Compositor",
+    "CompositionSpec",
+    "DifferentialCap",
+    "Gate",
+    "Monitor",
+    "RewardResult",
+    "Scorer",
+    "ComponentType",
+    "CompositionMonitor",
+    "GatedCompositor",
+    "RewardComponent",
+    "WeightedSumCompositor",
+    "run_bandit",
+    "spec_from_components",
+]
