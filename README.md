@@ -1,8 +1,8 @@
 # rewardcap
 
-Most LLM post-training pipelines aggregate several reward signals (correctness, format, an LLM judge, length, safety) into a single scalar with a weighted sum. The steepest-gradient signal ends up steering the policy regardless of how small you set its weight, which is how format compliance crowded out correctness in [Med-RLVR](https://arxiv.org/abs/2502.19655) and how CoT-reading judges produce the obfuscated reward hacking documented in [Baker et al. (2025)](https://arxiv.org/abs/2503.11926).
+When you combine multiple reward signals in LLM RL post-training using a weighted sum, whichever scorer has the steepest gradient ends up steering the policy, regardless of weight. Format compliance crowds out correctness ([Med-RLVR](https://arxiv.org/abs/2502.19655)). An LLM judge that can read the chain of thought ends up rewarding whatever CoT pattern correlates with high scores, even when that pattern has nothing to do with the task ([Baker et al. 2025](https://arxiv.org/abs/2503.11926)).
 
-`rewardcap` swaps the weighted sum for a gated sum of capped scorers, with a separate per-sample budget for any scorer that reads the chain of thought. The package is small (one composition module, one static audit, around 700 lines) and ships with a 2D toy that makes the dynamic visible.
+`rewardcap` is a small Python library that replaces the weighted sum with a gated sum of capped scorers, plus a separate per-sample budget for any scorer that reads the chain of thought.
 
 ## Install
 
@@ -37,13 +37,13 @@ assert_audit_passes(spec)
 reward = Compositor(spec).compose(model_output).reward
 ```
 
-The `format` gate short-circuits the reward to `-2.0` when the model output is malformed, so format compliance can't be traded against correctness. The `correctness` scorer is hard-clipped at 0.5 per sample. The `judge` is a CoT-reading LLM judge, so it gets a `DifferentialCap` with a CoT-blind companion (the same judge run on just the parsed answer). The wrapper returns
+The `format` gate short-circuits the reward to `-2.0` when the model output is malformed, so format compliance can't be traded against correctness. The `correctness` scorer is hard-clipped at 0.5 per sample. The `judge` is a CoT-reading LLM judge, so it gets a `DifferentialCap` with a CoT-blind companion (the same judge run on just the parsed answer). The wrapper computes
 
 ```
 s̃(x) = s_blind(x) + clip(s_aware(x) - s_blind(x), -δ, δ)
 ```
 
-then clips that at `c_s`, which means the CoT-only component of the reward can move the policy by at most `δ` per sample. `δ = 0` falls back to the blind reward, `δ → ∞` recovers the unclipped aware reward, and the interesting region is small positive values.
+clips that at `c_s`, and so the CoT-only component of the reward can move the policy by at most `δ` per sample. `δ = 0` falls back to the blind reward, `δ → ∞` recovers the unclipped aware reward, and the interesting region is small positive values.
 
 ## Does it work
 
