@@ -8,7 +8,7 @@ NOTEBOOKS := notebooks/01_failures.ipynb \
 
 FIGURES_DIR := results/figures
 
-.PHONY: setup test lint typecheck repro notebooks clean help
+.PHONY: setup test lint typecheck repro notebooks figures clean help
 
 help:
 	@echo "Targets:"
@@ -16,8 +16,9 @@ help:
 	@echo "  test        Run pytest -v"
 	@echo "  lint        Run ruff check on src/ tests/"
 	@echo "  typecheck   Run mypy --strict on src/"
+	@echo "  figures     Regenerate the README figures (hero.png, drift.png)"
 	@echo "  notebooks   Execute all notebooks headless in-place"
-	@echo "  repro       Run tests + notebooks + dump figures to $(FIGURES_DIR)"
+	@echo "  repro       Run tests + figures + notebooks"
 	@echo "  clean       Remove caches, results/, ipynb_checkpoints"
 
 setup:
@@ -32,6 +33,9 @@ lint:
 typecheck:
 	$(PYTHON) -m mypy --strict src/
 
+figures: $(FIGURES_DIR)
+	$(PYTHON) scripts/make_figures.py
+
 notebooks: $(FIGURES_DIR)
 	@for nb in $(NOTEBOOKS); do \
 		echo "[nbconvert] $$nb"; \
@@ -42,7 +46,7 @@ notebooks: $(FIGURES_DIR)
 $(FIGURES_DIR):
 	mkdir -p $(FIGURES_DIR)
 
-repro: test notebooks
+repro: test figures notebooks
 	@echo
 	@echo "make repro complete. Figures in $(FIGURES_DIR)/"
 	@ls -1 $(FIGURES_DIR) 2>/dev/null || echo "(no figures yet)"
